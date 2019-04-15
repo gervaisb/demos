@@ -46,10 +46,10 @@ the behavior to reduce the object-relational impedance mismatch:
 Do you remember the _[Memento pattern](https://en.wikipedia.org/wiki/Memento_pattern)_?  
 The base idea of _"providing the ability to reset an object to its previous 
 state_" is the same. While not for the same purpose, the same principle of 
-and the behavior is also applied in many actor based systems.
+splitting state and behavior is also applied in many actor based systems.
 
 This is an interesting approach that I would like to test in a spring-boot 
-application that honors the DDD principles and uses the spring data module.
+application that honors the DDD principles and uses the Spring data module.
 
 > Spring Data’s mission is to provide a familiar and consistent, Spring-based 
 > programming model for data access while still retaining the special traits of 
@@ -77,9 +77,6 @@ and contains zero or many `BacklogItem`s.
             // ...
         }
 
-        public void addBacklogItem(BacklogItem backlogItem) {
-            // ...
-        }
     }
 
 
@@ -88,7 +85,8 @@ _______________________________________________________________________________
 ## DDD vs spring data repositories
 
 In _DDD_, a repository manage one aggregate (or entity). However, the spring 
-data repository expects a JPA `@Entity`. Since our `Product` aggregate is not annotated with @Entity and we want to keep it clean we have to find a solution.
+data repository expects a JPA `@Entity`. Since our `Product` aggregate is not
+annotated with `@Entity` and we want to keep it clean we have to find a solution.
 
 ### Solution 1, expose the state.
 Whenever you want to save or retrieve an aggregate you deal with that 
@@ -114,8 +112,8 @@ The access to the aggregate state can be restricted via the package-friendly
 visibility if you use packages by feature. But since we want to have a clean 
 code base that embraces the DDD principles I would not recommend this approach. 
 
-### Solution 2, support repository.
-Compose your repositories of a spring data repository used as a supportive 
+### Solution 2, composition of repository.
+Compose your repositories with a spring data repository used as a supportive 
 component. And expose the state.
 
     class ProductRepositorySupport implements CrudRepository<ProductState, ProductId> {
@@ -209,6 +207,13 @@ aggregate.
         // ...
     }
 
-You can see that our aggregate is changed for JPA. But those are small changes that make the model more explict, a newcomer will understand the pattern by looking at the model.
+You can see that our aggregate is changed for JPA. But those are small changes 
+that make the model more explict, a newcomer will understand the pattern by 
+looking at the model.
 
-To make the exclusive link between the entity and his state class you can put both in the same source file, either as colocated or internal class.
+To make the exclusive link between the entity and his state class you can put 
+both in the same source file, either as colocated or internal class.
+
+
+If you are interested by the second approach, there is an excellent article 
+by Vytautas Žurauskas on medium : [Two layer repositories in Spring](https://www.vzurauskas.com/2019/04/07/two-layer-repositories-in-spring/)
